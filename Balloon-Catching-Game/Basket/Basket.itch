@@ -1,0 +1,21 @@
+number speed;
+
+
+event event_whenbroadcastreceived(@message("start")) {
+    speed = 10;
+    forever {
+        if sensing_keypressed("a") {
+            motion_changexby(-speed);
+        }
+        if sensing_keypressed("d") {
+            motion_changexby(speed);
+        }
+    }
+}
+
+
+event event_whenbroadcastreceived(@message("game over")) {
+    looks_say(operator_join(operator_join("Game over!", " Your score is: "), score));
+    control_stop("other scripts in sprite");
+    gameRunning = false;
+}

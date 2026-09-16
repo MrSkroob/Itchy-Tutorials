@@ -1,0 +1,22 @@
+shared number MAX_Y;
+shared number MAX_X;
+shared number MIN_X;
+shared number MIN_Y;
+
+shared number score;
+shared number lives;
+shared bool gameRunning;
+
+
+event event_whenflagclicked() {
+    // we want to define constants in the stage and only initialise
+    // other sprites when it has done so.
+    gameRunning = true;
+    score = 0;
+    lives = 3;
+    MAX_Y = 180;
+    MIN_Y = -180;
+    MAX_X = 240;
+    MIN_X = -240;
+    event_broadcast(@message("start"));
+}

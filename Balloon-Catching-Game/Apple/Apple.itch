@@ -1,0 +1,33 @@
+event event_whenflagclicked() {
+    looks_hide();
+}
+
+
+event control_start_as_clone() {
+    motion_sety(MAX_Y);
+    motion_setx(operator_random(MAX_X, MIN_X));
+    looks_show();
+
+    while (not sensing_touchingobject(@sprite("Basket"))) and motion_yposition() > (MIN_Y + 20) {
+        motion_changeyby(-5);
+    } 
+
+    if sensing_touchingobject(@sprite("Basket")) {
+        score += 1;
+    } else {
+        lives -= 1;
+        if lives == 0 {
+            event_broadcast(@message("game over"));
+        }
+    }
+
+    control_delete_this_clone();
+}
+
+
+event event_whenbroadcastreceived(@message("start")) {
+    while gameRunning {
+        control_wait(operator_random(1, 10) / 10);
+        control_create_clone_of("_myself_");
+    }
+}
