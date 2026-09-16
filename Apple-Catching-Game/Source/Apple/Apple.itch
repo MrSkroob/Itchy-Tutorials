@@ -1,3 +1,13 @@
+event event_whenbroadcastreceived(@message("start")) {
+    looks_hide();
+
+    while gameRunning {
+        control_wait(operator_random(1, 10) / 10);
+        control_create_clone_of("_myself_");
+    }
+}
+
+
 event control_start_as_clone() {
     motion_sety(MAX_Y);
     motion_setx(operator_random(MAX_X, MIN_X));
@@ -17,14 +27,4 @@ event control_start_as_clone() {
     }
 
     control_delete_this_clone();
-}
-
-
-event event_whenbroadcastreceived(@message("start")) {
-    looks_hide();
-    
-    while gameRunning {
-        control_wait(operator_random(1, 10) / 10);
-        control_create_clone_of("_myself_");
-    }
 }
