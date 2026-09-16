@@ -2,6 +2,7 @@ number speed;
 
 
 event event_whenbroadcastreceived(@message("start")) {
+    motion_gotoxy(0, 20); // start position. centre of the screen and slightly above the bottom.
     speed = 10;
     forever {
         if sensing_keypressed("a") {
