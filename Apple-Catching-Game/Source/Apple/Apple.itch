@@ -28,3 +28,4 @@ event control_start_as_clone() {
 
     control_delete_this_clone();
 }
+
