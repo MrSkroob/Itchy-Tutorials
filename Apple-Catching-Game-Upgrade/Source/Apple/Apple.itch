@@ -1,0 +1,64 @@
+string appleType;
+
+
+define getFrequency(level: number) -> number {
+    if level > data_lengthoflist(levels) {
+        return levelsAppleFrequency[data_lengthoflist(levels)];
+    }
+    return levelsAppleFrequency[level];
+}
+
+
+event event_whenbroadcastreceived(@message("start")) {
+    looks_hide();
+
+    while gameRunning {
+        control_wait(operator_random(1, 10) / getFrequency(level));
+        control_create_clone_of("_myself_");
+    }
+}
+
+
+event control_start_as_clone() {
+    if operator_random(0, 5) == 1 {
+        appleType = "health";
+        forever {
+            looks_changeeffectby(10, "color");
+        }
+    }
+    else {
+        appleType = "normal";
+    }
+}
+
+
+event control_start_as_clone() {
+    motion_sety(MAX_Y);
+    motion_setx(operator_random(MAX_X, MIN_X));
+    looks_show();
+
+    while (not sensing_touchingobject(@sprite("Basket"))) and motion_yposition() > (MIN_Y + 20) {
+        motion_changeyby(-5);
+    } 
+
+    if sensing_touchingobject(@sprite("Basket")) {
+        score += 1;
+        if appleType == @message("health") and lives < 3 {
+            lives += 1;
+            event_broadcast(@message("health up"));
+        }
+
+        if score > levels[level] {
+            level += 1;
+            event_broadcast(@message("level change"));
+        } 
+    } else {
+        lives -= 1;
+        if lives == 0 {
+            event_broadcast(@message("game over"));
+        }
+    }
+
+    control_delete_this_clone();
+}
+

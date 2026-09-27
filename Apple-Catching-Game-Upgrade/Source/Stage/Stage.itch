@@ -7,6 +7,17 @@ shared number score;
 shared number lives;
 shared bool gameRunning;
 
+shared number level;
+
+shared list levels;
+shared list levelsAppleFrequency;
+
+
+define addLevel(threshold: number, appleFrequency: number) {
+    data_addtolist(threshold, levels);
+    data_addtolist(appleFrequency, levelsAppleFrequency);
+}
+
 
 event event_whenflagclicked() {
     // we want to define constants in the stage and only initialise
@@ -18,6 +29,19 @@ event event_whenflagclicked() {
     MIN_Y = -180;
     MAX_X = 240;
     MIN_X = -240;
+    level = 1;
+    
+    addLevel(3, 1);
+    addLevel(6, 2);
+    addLevel(12, 3);
+    addLevel(20, 4);
+    addLevel(30, 5);
+    addLevel(45, 6);
+    addLevel(65, 7);
+    addLevel(90, 8);
+    addLevel(120, 9);
+    addLevel(200, 10);
+
     data_showvariable(score);
     data_showvariable(lives);
     event_broadcast(@message("start"));
