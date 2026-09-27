@@ -9,6 +9,14 @@ define getFrequency(level: number) -> number {
 }
 
 
+define getLevelThreshold(level: number) -> number {
+    if level > data_lengthoflist(levels) {
+        return levels[data_lengthoflist(levels)];
+    }
+    return levels[level];
+}
+
+
 event event_whenbroadcastreceived(@message("start")) {
     looks_hide();
 
@@ -20,14 +28,20 @@ event event_whenbroadcastreceived(@message("start")) {
 
 
 event control_start_as_clone() {
-    if operator_random(0, 5) == 1 {
+    if operator_random(1, 5) == 1 {
         appleType = "health";
+    }
+    else {
+        appleType = "normal";
+    }
+
+    if appleType == "health" {
         forever {
             looks_changeeffectby(10, "color");
         }
     }
-    else {
-        appleType = "normal";
+    if appleType == "normal" {
+
     }
 }
 
@@ -47,8 +61,7 @@ event control_start_as_clone() {
             lives += 1;
             event_broadcast(@message("health up"));
         }
-
-        if score > levels[level] {
+        if score > getLevelThreshold(level) {
             level += 1;
             event_broadcast(@message("level change"));
         } 
