@@ -1,19 +1,26 @@
 string appleType;
 
 
-define getFrequency(level: number) -> number {
+define getFrequency(level: number) {
     if level > data_lengthoflist(levels) {
+        // frequency = levelsAppleFrequency[data_lengthoflist(levels)];
+        // return;
         return levelsAppleFrequency[data_lengthoflist(levels)];
     }
+
     return levelsAppleFrequency[level];
+    // frequency = levelsAppleFrequency[level];
 }
 
 
-define getLevelThreshold(level: number) -> number {
+define getLevelThreshold(level: number) {
     if level > data_lengthoflist(levels) {
+        // levelThreshold = levels[data_lengthoflist(levels)];
         return levels[data_lengthoflist(levels)];
+        // return;
     }
     return levels[level];
+    // levelThreshold = levels[level];
 }
 
 
@@ -41,7 +48,7 @@ event control_start_as_clone() {
         }
     }
     if appleType == "normal" {
-
+        
     }
 }
 
@@ -51,20 +58,20 @@ event control_start_as_clone() {
     motion_setx(operator_random(MAX_X, MIN_X));
     looks_show();
 
-    while (not sensing_touchingobject(@sprite("Basket"))) and motion_yposition() > (MIN_Y + 20) {
+    while (not sensing_touchingobject(@sprite("Bowl"))) and motion_yposition() > (MIN_Y + 20) {
         motion_changeyby(-5);
     } 
 
-    if sensing_touchingobject(@sprite("Basket")) {
+    if sensing_touchingobject(@sprite("Bowl")) {
         score += 1;
-        if appleType == @message("health") and lives < 3 {
+        if appleType == @message("health") and lives < MAX_LIVES {
             lives += 1;
             event_broadcast(@message("health up"));
         }
         if score > getLevelThreshold(level) {
             level += 1;
             event_broadcast(@message("level change"));
-        } 
+        }
     } else {
         lives -= 1;
         if lives == 0 {
