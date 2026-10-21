@@ -1,0 +1,64 @@
+shared list apple_location;
+
+number try_x;
+number try_y;
+
+
+number x_pointer;
+number y_pointer;
+
+
+bool spawning;
+
+
+define normalise_pointer(pointer: number) {
+    x_pointer = pointer * 2;
+    y_pointer = x_pointer + 1;
+    x_pointer += 1;
+    y_pointer += 1;
+}
+
+
+define spawn(x: number, y: number) {
+    spawning = true;
+
+    apple_location[1] = "";
+    apple_location[2] = "";
+    
+    try_x = x;
+    try_y = y;
+    
+    while spawning {
+        spawning = false;
+
+        for i = 0, snake_length, 1 {     
+            normalise_pointer(i);   
+
+            // touching apple?
+            if snake_part_locations[x_pointer] == try_x 
+                and snake_part_locations[y_pointer] == try_y {
+                spawning = true;
+
+                try_x = operator_random(-MAX_X, MAX_X);
+                try_y = operator_random(-MAX_Y, MAX_Y);
+            }
+        } 
+    }
+
+
+    apple_location[1] = try_x;
+    apple_location[2] = try_y;
+}
+
+
+event event_whenbroadcastreceived(@message("spawn")) {
+    spawn(
+        operator_random(-MAX_X, MAX_X),
+        operator_random(-MAX_Y, MAX_Y)
+    );
+}
+
+
+// event event_whenflagclicked() {
+//     // spawn(-10, 0);
+// }

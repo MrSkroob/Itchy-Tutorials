@@ -1,0 +1,14 @@
+event event_whenbroadcastreceived(@message("eat")) {
+    looks_sayforsecs("Nom!", 2);
+}
+
+event event_whenbroadcastreceived(@message("lose")) {
+    looks_sayforsecs("Ouch!", 2);
+    looks_say(operator_join(operator_join("My final score is: ", snake_length), "."));
+}
+
+event event_whenflagclicked() {
+    forever {
+        motion_gotoxy(tail_x * SQUARE_SIZE, tail_y * SQUARE_SIZE);
+    }
+}

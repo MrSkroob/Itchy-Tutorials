@@ -58,7 +58,7 @@ event control_start_as_clone() {
     motion_setx(operator_random(MAX_X, MIN_X));
     looks_show();
 
-    while (not sensing_touchingobject(@sprite("Bowl"))) and motion_yposition() > (MIN_Y + 20) {
+    while not sensing_touchingobject(@sprite("Bowl")) and motion_yposition() > (MIN_Y + 20) {
         motion_changeyby(-5);
     } 
 

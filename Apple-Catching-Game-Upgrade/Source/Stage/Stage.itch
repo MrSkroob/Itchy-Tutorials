@@ -24,7 +24,6 @@ define addLevel(threshold: number, appleFrequency: number) {
 event event_whenflagclicked() {
     // we want to define constants in the stage and only initialise
     // other sprites when it has done so.
-    baz = 0;
     gameRunning = true;
     score = 0;
     MAX_LIVES = 3;

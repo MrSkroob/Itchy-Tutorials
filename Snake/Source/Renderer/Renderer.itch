@@ -1,0 +1,116 @@
+shared number SQUARE_SIZE;
+shared number MAX_X;
+shared number MAX_Y;
+
+number SPEED;
+
+
+number grid_start_x;
+number grid_start_y;
+number grid_x;
+number grid_y;
+
+
+string RED;
+string GREEN;
+string GREY;
+string ORANGE;
+
+// number pointer;
+// number x_pointer;
+// number y_pointer;
+
+define warp draw_square(x: number, y: number, colour: string) {
+    motion_gotoxy(x, y);
+    motion_changexby(SQUARE_SIZE / 2);
+    motion_changeyby(SQUARE_SIZE / 2);
+    pen_setPenColorToColor(colour);
+    pen_penDown();
+    pen_setPenSizeTo(SQUARE_SIZE / 2);
+    motion_changexby(SQUARE_SIZE / 2);
+    motion_changeyby(-SQUARE_SIZE / 2);
+    motion_changexby(-SQUARE_SIZE / 2);
+    motion_changeyby(SQUARE_SIZE / 2);
+    pen_penUp();
+}
+
+
+define warp draw_apple() {
+    if apple_location[1] == "" { return; }
+
+    draw_square(
+        apple_location[1] * SQUARE_SIZE, 
+        apple_location[2] * SQUARE_SIZE - SQUARE_SIZE / 2, 
+        RED
+    );
+}
+ 
+
+define warp draw_snake() {
+    draw_square(
+        head_x * SQUARE_SIZE, 
+        head_y * SQUARE_SIZE - (SQUARE_SIZE / 2), 
+        GREEN
+    );
+
+    draw_square(
+        tail_x * SQUARE_SIZE,
+        tail_y * SQUARE_SIZE - (SQUARE_SIZE / 2),
+        GREY
+    );
+}
+
+
+define warp draw_grid(
+    x: number, 
+    y: number, 
+    squares_left: number, 
+    squares_up: number) {
+    grid_start_x = x - (squares_left * SQUARE_SIZE);
+    grid_start_y = y + (squares_up * SQUARE_SIZE) - (SQUARE_SIZE / 2);
+
+    MAX_X = squares_left - 1;
+    MAX_Y = squares_up - 1;
+
+    // columns
+    for i = 0, squares_up * 2, 1 {
+        // rows
+        grid_y = grid_start_y - (i * SQUARE_SIZE);
+        for j = 0, squares_left * 2, 1 {
+            grid_x = grid_start_x + j * SQUARE_SIZE;
+            draw_square(grid_x, grid_y, GREY);
+        }
+    } 
+}
+
+
+define warp render() {
+    draw_apple();
+    draw_snake();
+}
+
+
+event event_whenflagclicked() {
+    // x = 0;
+    // y = 0;
+    SPEED = 10;
+    SQUARE_SIZE = 20;
+    RED = "#F54927";
+    GREEN = "#11D18C";
+    GREY = "#525252";
+    ORANGE = "#ffa600";
+    pen_clear();
+    draw_grid(0, 0, 11, 8);
+    apple_location = [-10, 0];
+    event_broadcastandwait(@message("spawn"));
+}
+
+
+event event_whenbroadcastreceived(@message("lose")) {
+    control_stop("other scripts in sprite");
+}
+
+
+event event_whenbroadcastreceived(@message("render")) {
+    render();
+}

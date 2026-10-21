@@ -1,0 +1,170 @@
+// x position is offset from left
+// y position is offset from top
+shared number head_x;
+shared number head_y;
+
+shared number tail_x;
+shared number tail_y;
+
+string direction_queued;
+
+number x_direction; 
+number y_direction;
+
+number move_delay;
+
+
+/*
+circular queue
+*/
+shared list snake_part_locations;
+number head_pointer;
+number tail_pointer;
+shared number snake_length;
+
+number x_pointer;
+number y_pointer;
+
+number local_x;
+number local_y;
+
+define warp normalise_pointer(pointer: number) {
+    x_pointer = pointer * 2;
+    y_pointer = x_pointer + 1;
+    x_pointer += 1;
+    y_pointer += 1;
+}
+
+
+define warp resize() {
+    normalise_pointer(tail_pointer);
+
+    local_x = snake_part_locations[x_pointer];
+    local_y = snake_part_locations[y_pointer];
+
+    snake_length += 1;
+    data_insertatlist(local_x, x_pointer, snake_part_locations);
+    data_insertatlist(local_y, y_pointer, snake_part_locations);
+}
+
+
+define warp enqueue() {
+    head_pointer = operator_mod(head_pointer + 1, snake_length);
+    tail_pointer = operator_mod(head_pointer + 1, snake_length);
+
+    normalise_pointer(head_pointer);
+
+    snake_part_locations[x_pointer] = head_x;
+    snake_part_locations[y_pointer] = head_y;
+
+    normalise_pointer(tail_pointer);
+
+    tail_x = snake_part_locations[x_pointer];
+    tail_y = snake_part_locations[y_pointer];
+}
+
+
+event event_whenflagclicked() {
+    head_x = 0;
+    head_y = 0;
+    x_direction = 0;
+    y_direction = 0;
+    direction_queued = "left";
+    tail_x = head_x;
+    tail_y = head_y;
+    move_delay = 0.3;
+    head_pointer = -1;
+    tail_pointer = 0;
+    snake_length = 5;
+    data_deletealloflist(snake_part_locations);
+    for i = 0, snake_length, 1 {
+        data_addtolist(0, snake_part_locations);
+        data_addtolist(0, snake_part_locations);
+    }
+}
+
+
+event event_whenflagclicked() {
+    forever {
+        if sensing_keypressed("a") {
+            direction_queued = "left";
+        } 
+        if sensing_keypressed("d") {
+            direction_queued = "right";
+        } 
+        if sensing_keypressed("w") {
+            direction_queued = "up";
+        } 
+        if sensing_keypressed("s") {
+            direction_queued = "down";
+        } 
+    }
+}
+
+
+define warp touching() {
+    for i = 0, snake_length, 1 {     
+        normalise_pointer(i);   
+
+        // touching apple?
+        if apple_location[1] != "" {
+            if (snake_part_locations[x_pointer] == apple_location[1] 
+                and snake_part_locations[y_pointer] == apple_location[2]) {
+                move_delay = (0.3 / (snake_length / 2)) + 0.05;
+                event_broadcast(@message("spawn"));
+                event_broadcast(@message("eat"));
+                resize();
+                return;
+            }
+        }
+        
+        if i != head_pointer {
+            if (snake_part_locations[x_pointer] == head_x 
+                and snake_part_locations[y_pointer] == head_y) {
+                event_broadcast(@message("lose"));
+                return;
+            }
+
+            if (head_x < -MAX_X 
+                or head_x > MAX_X
+                or head_y < -MAX_Y
+                or head_y > MAX_Y) {
+                event_broadcast(@message("lose"));
+                return;
+            }
+        }
+    } 
+}
+
+
+event event_whenflagclicked() {
+    looks_sayforsecs("Ready?", 2);
+    looks_sayforsecs("Go!", 1);
+    forever {
+        if direction_queued == "left" and x_direction == 0 {
+            x_direction = -1;
+            y_direction = 0;
+        } elseif direction_queued == "right" and x_direction == 0 {
+            x_direction = 1;
+            y_direction = 0;
+        } elseif direction_queued == "up" and y_direction == 0 {
+            y_direction = 1;
+            x_direction = 0;
+        } elseif direction_queued == "down" and y_direction == 0 {
+            y_direction = -1;
+            x_direction = 0;
+        }
+
+        head_x += x_direction;
+        head_y += y_direction;
+        enqueue();
+        touching();
+        event_broadcast(@message("render"));
+        control_wait(move_delay);
+    }
+}
+
+
+event event_whenbroadcastreceived(@message("lose")) {
+    control_stop("other scripts in sprite");
+}
