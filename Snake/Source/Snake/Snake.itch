@@ -37,30 +37,32 @@ define warp normalise_pointer(pointer: number) {
 
 
 define warp resize() {
-    normalise_pointer(tail_pointer);
+    normalise_pointer(head_pointer + 1);
 
     local_x = snake_part_locations[x_pointer];
     local_y = snake_part_locations[y_pointer];
 
-    snake_length += 1;
     data_insertatlist(local_x, x_pointer, snake_part_locations);
     data_insertatlist(local_y, y_pointer, snake_part_locations);
+
+    snake_length += 1;
 }
 
 
 define warp enqueue() {
-    head_pointer = operator_mod(head_pointer + 1, snake_length);
-    tail_pointer = operator_mod(head_pointer + 1, snake_length);
+    head_pointer = operator_mod(head_pointer + 1, snake_length + 1);
 
     normalise_pointer(head_pointer);
 
     snake_part_locations[x_pointer] = head_x;
     snake_part_locations[y_pointer] = head_y;
 
+    tail_pointer = operator_mod(head_pointer + 1, snake_length + 1);
     normalise_pointer(tail_pointer);
 
     tail_x = snake_part_locations[x_pointer];
     tail_y = snake_part_locations[y_pointer];
+
 }
 
 
@@ -77,7 +79,7 @@ event event_whenflagclicked() {
     tail_pointer = 0;
     snake_length = 5;
     data_deletealloflist(snake_part_locations);
-    for i = 0, snake_length, 1 {
+    for i = 0, snake_length + 1, 1 {
         data_addtolist(0, snake_part_locations);
         data_addtolist(0, snake_part_locations);
     }
@@ -157,8 +159,8 @@ event event_whenflagclicked() {
 
         head_x += x_direction;
         head_y += y_direction;
-        enqueue();
         touching();
+        enqueue();
         event_broadcast(@message("render"));
         control_wait(move_delay);
     }

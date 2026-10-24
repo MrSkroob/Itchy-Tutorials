@@ -34,7 +34,7 @@ define spawn(x: number, y: number) {
         for i = 0, snake_length, 1 {     
             normalise_pointer(i);   
 
-            // touching apple?
+            // touching snake?
             if snake_part_locations[x_pointer] == try_x 
                 and snake_part_locations[y_pointer] == try_y {
                 spawning = true;
@@ -57,8 +57,3 @@ event event_whenbroadcastreceived(@message("spawn")) {
         operator_random(-MAX_Y, MAX_Y)
     );
 }
-
-
-// event event_whenflagclicked() {
-//     // spawn(-10, 0);
-// }
