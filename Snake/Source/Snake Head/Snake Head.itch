@@ -9,6 +9,6 @@ event event_whenbroadcastreceived(@message("lose")) {
 
 event event_whenflagclicked() {
     forever {
-        motion_gotoxy(tail_x * SQUARE_SIZE, tail_y * SQUARE_SIZE);
+        motion_gotoxy(head_x * SQUARE_SIZE, tail_y * SQUARE_SIZE);
     }
 }

@@ -159,9 +159,9 @@ event event_whenflagclicked() {
 
         head_x += x_direction;
         head_y += y_direction;
-        touching();
+        event_broadcastandwait(@message("render"));
         enqueue();
-        event_broadcast(@message("render"));
+        touching();
         control_wait(move_delay);
     }
 }
