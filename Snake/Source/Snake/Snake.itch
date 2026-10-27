@@ -123,6 +123,7 @@ define warp touching() {
         if i != head_pointer {
             if (snake_part_locations[x_pointer] == head_x 
                 and snake_part_locations[y_pointer] == head_y) {
+                event_broadcastandwait(@message("render"));
                 event_broadcast(@message("lose"));
                 return;
             }
@@ -131,6 +132,7 @@ define warp touching() {
                 or head_x > MAX_X
                 or head_y < -MAX_Y
                 or head_y > MAX_Y) {
+                event_broadcastandwait(@message("render"));
                 event_broadcast(@message("lose"));
                 return;
             }
@@ -159,9 +161,9 @@ event event_whenflagclicked() {
 
         head_x += x_direction;
         head_y += y_direction;
-        event_broadcastandwait(@message("render"));
         enqueue();
         touching();
+        event_broadcastandwait(@message("render"));
         control_wait(move_delay);
     }
 }
