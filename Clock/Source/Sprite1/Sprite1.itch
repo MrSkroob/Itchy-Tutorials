@@ -1,0 +1,92 @@
+define set_pen_style(pen_style: string) {
+    if pen_style == "rim" {
+        pen_setPenSizeTo(2);
+        pen_setPenColorToColor("#000000");
+    } elseif pen_style == "secondary rim" {
+        pen_setPenSizeTo(1);
+        pen_setPenColorToColor("#353535");
+    } elseif pen_style == "second" {
+        pen_setPenSizeTo(2);
+        pen_setPenColorToColor("#ff0000");
+    } elseif pen_style == "minute" {
+        pen_setPenSizeTo(4);
+        pen_setPenColorToColor("#000000");
+    } elseif pen_style == "hour" {
+        pen_setPenSizeTo(4);
+        pen_setPenColorToColor("#000000");
+    }
+}
+
+
+define warp draw_hand(
+    x: number, 
+    y: number, 
+    pen_style: string, 
+    percent: number, 
+    length: number) 
+{
+    motion_gotoxy(x, y);
+    set_pen_style(pen_style);
+    motion_pointindirection(percent * 360);
+    pen_penDown();
+    motion_movesteps(length);
+    pen_penUp();
+}
+
+
+define warp draw_dividers(
+    x: number, 
+    y: number, 
+    pen_style: string,
+    radius: number, 
+    divider_length: number, 
+    step: number) 
+{
+    set_pen_style(pen_style);
+    for i = 0, 360, step {
+        pen_penUp();
+        motion_gotoxy(x, y);
+        motion_pointindirection(i);
+        motion_movesteps(radius);
+        pen_penDown();
+        motion_movesteps(-divider_length);
+    }
+    pen_penUp();
+}
+
+
+define warp draw_circle(x: number, y: number, radius: number) {
+    motion_gotoxy(x, y);
+    motion_pointindirection(0);
+    motion_movesteps(radius);
+    set_pen_style("rim");
+    pen_penDown();
+    for i = 0, 360, 1 {        
+        motion_gotoxy(x + radius * operator_mathop(i, "sin"), 
+            y + radius * operator_mathop(i, "cos"));
+    }
+
+    pen_penUp();
+}
+
+
+define draw_clock(hour: number, minute: number, second: number) {
+    draw_circle(0, 0, 100);
+    draw_dividers(0, 0, "secondary rim", 100, 5, 6);
+    draw_dividers(0, 0, "rim", 100, 10, 30);
+    draw_hand(0, 0, "second", second / 60, 90);
+    draw_hand(0, 0, "minute", (minute / 60) + ((second / 60) / 60), 90);
+    draw_hand(0, 0, "hour", (hour / 12) + ((minute / 60) / 12) + (((second / 60) / 60) / 12), 60);
+}
+
+
+event event_whenflagclicked() {
+    forever {
+        pen_clear();
+        draw_clock(
+            sensing_current("hour"),
+            sensing_current("minute"),
+            sensing_current("second")
+        );
+    }
+}

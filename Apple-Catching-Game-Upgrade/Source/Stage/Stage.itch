@@ -18,6 +18,12 @@ shared list levelsAppleFrequency;
 define addLevel(threshold: number, appleFrequency: number) {
     data_addtolist(threshold, levels);
     data_addtolist(appleFrequency, levelsAppleFrequency);
+
+    if true {
+        return;
+    }
+
+    return 0;
 }
 
 
